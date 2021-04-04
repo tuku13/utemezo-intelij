@@ -42,7 +42,7 @@ public class GlobalScheduler {
             List<Task> toRemove = new ArrayList<>();
             for(int i = 0; i < futureTasks.size(); i++) {
                 Task t = futureTasks.get(i);
-                if(t.getArrivalTime() <= time) {
+                if(t.getArrivalTime() == time) {
                     toRemove.add(t);
                     schedulers.get(t.getPriority()).add(t);
                 }
@@ -51,7 +51,8 @@ public class GlobalScheduler {
 
             for(int i = schedulers.size() - 1; i > -1; i--) {
                 if(schedulers.get(i).hasTask()){
-                    time += schedulers.get(i).tick(time);
+                    schedulers.get(i).tick(time);
+                    time++;
                     continue mainloop;
                 }
             }

@@ -4,6 +4,7 @@ import java.util.List;
 
 public class SJFScheduler extends Scheduler{
     List<Task> tasks;
+    Task running;
 
     public SJFScheduler() {
         tasks = new ArrayList<>();
@@ -16,24 +17,27 @@ public class SJFScheduler extends Scheduler{
 
     @Override
     public int tick(int now) {
-        Task t = getShortesTask();
-        tasks.remove(t);
-
-        for(int i = 0; i < t.getMaxCpuBurst(); i++) {
-            t.tick();
+        if(running == null) {
+            running = getShortestTask();
+            tasks.remove(running);
         }
 
-        t.setWaitingTime(now - t.getArrivalTime());
-        GlobalScheduler.getInstance().addDoneTask(t);
-        return t.getMaxCpuBurst();
+        running.tick();
+
+        if(running.isDone()){
+            running.setWaitingTime(now + 1 - running.getMaxCpuBurst() - running.getArrivalTime());
+            GlobalScheduler.getInstance().addDoneTask(running);
+            running = null;
+        }
+        return 1;
     }
 
     @Override
     public boolean hasTask() {
-        return !tasks.isEmpty();
+        return !tasks.isEmpty() || running != null;
     }
     
-    private Task getShortesTask() {
+    private Task getShortestTask() {
         return Collections.min(tasks, new TaskComparator());//, new TaskComparator());
     }
 }

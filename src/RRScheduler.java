@@ -25,10 +25,10 @@ public class RRScheduler extends Scheduler{
     public int tick(int now) {
         if(running == null) {
             running = tasks.poll();
-        }
+        }//ha még nem járt le
         else if(timeSlice != maxTimeSlice && last + 1 != now) {
             tasks.add(running);
-            running = tasks.poll();
+            running = null;
             timeSlice = 0;
         }
 

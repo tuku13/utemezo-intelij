@@ -14,8 +14,8 @@ class Main{
 
             line = scanner.nextLine();
         }
-        while(scanner.hasNextLine() && !line.equals(""));
-        
+        while(scanner.hasNextLine() && !line.isEmpty());
+
         GlobalScheduler.getInstance().run();
         scanner.close();
     }
