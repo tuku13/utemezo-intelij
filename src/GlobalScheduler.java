@@ -7,7 +7,13 @@ public class GlobalScheduler {
     private List<Task> futureTasks;
     private List<Task> doneTasks;//Taszk és, hogy mikor fejeződött be
     private static GlobalScheduler globalScheduler;
+    private Scheduler lastScheduler;
     private int maxTasks;
+
+    public int getTime() {
+        return time;
+    }
+
     private int time;
     private String runningNow;
 
@@ -51,12 +57,17 @@ public class GlobalScheduler {
 
             for(int i = schedulers.size() - 1; i > -1; i--) {
                 if(schedulers.get(i).hasTask()){
-                    schedulers.get(i).tick(time);
+                    for(int j = i-1; j > -1; j--){
+                        schedulers.get(j).interrupt();
+                    }
+                    schedulers.get(i).tick();
+                    lastScheduler = schedulers.get(i);
                     time++;
                     continue mainloop;
                 }
             }
-            time++; 
+            time++;
+
         }
 
         listDoneTasks();

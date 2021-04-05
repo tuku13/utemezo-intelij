@@ -18,7 +18,7 @@ public class Task{
     public void tick() {
         cpuBurst--;
         GlobalScheduler.getInstance().addToRunning(name);
-        System.out.println(this);
+        //System.out.println(this);
     }
 
     public boolean isDone() {

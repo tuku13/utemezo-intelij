@@ -6,14 +6,12 @@ public class RRScheduler extends Scheduler{
     private int maxTimeSlice;
     private int timeSlice;
     private Task running;
-    private int last;
 
     public RRScheduler(int timeSlice){
         this.maxTimeSlice = timeSlice;
         this.timeSlice = 0;
-        tasks = new ArrayDeque<Task>();
+        tasks = new ArrayDeque<>();
         running = null;
-        this.last = 9999999;
     }
 
     @Override
@@ -22,34 +20,38 @@ public class RRScheduler extends Scheduler{
     }
 
     @Override
-    public int tick(int now) {
-        if(running == null) {
-            running = tasks.poll();
-        }//ha még nem járt le
-        else if(timeSlice != maxTimeSlice && last + 1 != now) {
-            tasks.add(running);
-            running = null;
-            timeSlice = 0;
-        }
-
-        last = now;
-        running.tick();
-        timeSlice++;
-
-        if(running.isDone()){
-            running.setWaitingTime(now + 1 - running.getMaxCpuBurst() - running.getArrivalTime() );
-            GlobalScheduler.getInstance().addDoneTask(running);
-            running = null;
-            timeSlice = 0;
-        }
-
+    public void tick() {
         if(timeSlice == maxTimeSlice) {
             tasks.add(running);
             running = null;
             timeSlice = 0;
         }
 
-        return 1;
+        if(running == null) {
+            running = tasks.poll();
+        }
+
+        running.tick();
+
+        if(running.isDone()){
+            running.setWaitingTime(GlobalScheduler.getInstance().getTime() + 1 - running.getMaxCpuBurst() - running.getArrivalTime() );
+            GlobalScheduler.getInstance().addDoneTask(running);
+            running = null;
+            timeSlice = 0;
+        }
+        else{
+            timeSlice++;
+        }
+    }
+
+    @Override
+    public void interrupt() {
+        timeSlice = 0;
+        //todo taszk csere
+        if(running != null){
+            tasks.add(running);
+            running = null;
+        }
     }
 
     @Override

@@ -16,7 +16,7 @@ public class SJFScheduler extends Scheduler{
     }
 
     @Override
-    public int tick(int now) {
+    public void tick() {
         if(running == null) {
             running = getShortestTask();
             tasks.remove(running);
@@ -25,12 +25,14 @@ public class SJFScheduler extends Scheduler{
         running.tick();
 
         if(running.isDone()){
-            running.setWaitingTime(now + 1 - running.getMaxCpuBurst() - running.getArrivalTime());
+            running.setWaitingTime(GlobalScheduler.getInstance().getTime() + 1 - running.getMaxCpuBurst() - running.getArrivalTime());
             GlobalScheduler.getInstance().addDoneTask(running);
             running = null;
         }
-        return 1;
     }
+
+    @Override
+    public void interrupt() { }
 
     @Override
     public boolean hasTask() {
