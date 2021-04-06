@@ -82,19 +82,20 @@ public class GlobalScheduler {
 
     //kiírja az összes taszk adatát
     private void listDoneTasks() {
-        String str = runningNow + "\n";
+        System.out.println(runningNow);
+        StringBuilder stringBuilder = new StringBuilder();
 
         Collections.sort(doneTasks, new TaskArrivalTimeComparator());
 
         for(int i = 0; i < doneTasks.size(); i++) {
             Task t = doneTasks.get(i);
-            str += t.getName() + ":" + t.getWaitingTime();
+            stringBuilder.append(t.getName() + ":" + t.getWaitingTime());
             if(i != doneTasks.size() - 1){
-                str += ",";
+                stringBuilder.append(',');
             }
         }
 
-        System.out.println(str);
+        System.out.println(stringBuilder.toString());
     }
 
 
